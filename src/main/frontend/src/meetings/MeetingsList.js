@@ -13,25 +13,26 @@ export default function MeetingsList({meetings, username, onDelete, onSignOut, o
             </thead>
             <tbody>
             {
-                meetings.map((meeting, index) => <tr key={index}>
-                    <td>{meeting.title}</td>
-                    <td>{meeting.description}</td>
-                    <td>
-                        {
-                            meeting.participants.length > 0
-                                ? <ul>{meeting.participants.map(p => <li key={p}>{p}</li>)}</ul>
-                                : <em>Brak uczestników</em>
-                        }
-                    </td>
-                    <td>
-                        <MeetingButtons meeting={meeting}
-                                        username={username}
-                                        onDelete={() => onDelete(meeting)}
-                                        onSignIn={() => onSignIn(meeting)}
-                                        onSignOut={() => onSignOut(meeting)}/>
-                    </td>
-                </tr>)
-            }
+                meetings.map((meeting, index) => (
+                    <tr key={index}>
+                        <td>{meeting.title}</td>
+                        <td>{meeting.description}</td>
+                        <td>
+                            {
+                                meeting.participants.length > 0
+                                    ? (<ul> {meeting.participants.map((p, idx) => (<li key={idx}>{p.login}</li>))}</ul>)
+                                    : (<em>Brak uczestników</em>)
+                            }
+                        </td>
+                        <td>
+                            <MeetingButtons meeting={meeting}
+                                            username={username}
+                                            onDelete={() => onDelete(meeting)}
+                                            onSignIn={() => onSignIn(meeting)}
+                                            onSignOut={() => onSignOut(meeting)}/>
+                        </td>
+                    </tr>
+                ))}
             </tbody>
         </table>
     );

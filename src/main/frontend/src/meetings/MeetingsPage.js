@@ -40,24 +40,53 @@ export default function MeetingsPage({username}) {
         }
     }
 
-    function handleSignIn(meeting) {
-        const nextMeetings = meetings.map(m => {
-            if (m === meeting) {
-                m.participants = [...m.participants, username];
+    async function handleSignIn(meeting) {
+        try {
+            const response = await fetch(`/api/meetings/${meeting.id}/participants`, {
+                method: 'POST',
+                body: JSON.stringify({ login: username }),
+                headers: { 'Content-Type': 'application/json' }
+            });
+
+            if (response.ok) {
+                const updatedParticipants = await response.json();
+                const nextMeetings = meetings.map(m => {
+                    if (m.id === meeting.id) {
+                        return { ...m, participants: updatedParticipants};
+                    }
+                    return m;
+                });
+                setMeetings(nextMeetings);
+            } else {
+                console.error('Failed to sign in to a meeting: ', response.statusText);
             }
-            return m;
-        });
-        setMeetings(nextMeetings);
+        } catch (error) {
+            console.error('Error during sign in: ', error)
+        }
+
     }
 
-    function handleSignOut(meeting) {
-        const nextMeetings = meetings.map(m => {
-            if (m === meeting) {
-                m.participants = m.participants.filter(u => u !== username);
+    async function handleSignOut(meeting) {
+        try {
+            const response = await fetch(`/api/meetings/${meeting.id}/participants/${username}`, {
+                method: 'DELETE'
+            });
+
+            if (response.ok) {
+                const updatedParticipants = await response.json();
+                const nextMeetings = meetings.map(m => {
+                    if (m.id === meeting.id) {
+                        return { ...m, participants: updatedParticipants};
+                    }
+                    return m;
+                });
+                setMeetings(nextMeetings);
+            } else {
+                console.error('Failed to sign out of a meeting: ', response.statusText);
             }
-            return m;
-        });
-        setMeetings(nextMeetings);
+        } catch(error) {
+            console.error('Error during sign out: ', error);
+        }
     }
 
     return (

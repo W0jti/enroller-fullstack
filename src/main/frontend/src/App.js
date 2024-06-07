@@ -7,9 +7,26 @@ import UserPanel from "./UserPanel";
 function App() {
     const [loggedIn, setLoggedIn] = useState('');
 
-    function login(email) {
+    async function login(email) {
         if (email) {
-            setLoggedIn(email);
+            const response = await fetch(`/api/participants/${email}`);
+            if (response.status === 404) {
+                const  createResponse = await fetch('/api/participants/', {
+                    method: 'POST',
+                    body: JSON.stringify({login: email}),
+                    headers: { 'Content-Type': 'application/json' }
+                });
+
+                if (createResponse.ok) {
+                    setLoggedIn(email);
+                } else {
+                    console.error('Failed to create participant:', createResponse.statusText);
+                }
+            } else if (response.ok) {
+                setLoggedIn(email);
+            } else {
+                console.error('Failed to check participant:', response.statusText);
+            }
         }
     }
 

@@ -100,6 +100,9 @@ public class MeetingRestController {
         }
 
         Participant participantToAdd = participantService.findByLogin(login);
+        if (participantToAdd == null) {
+            return new ResponseEntity<>("Participant not found", HttpStatus.NOT_FOUND);
+        }
         currentMeeting.addParticipant(participantToAdd);
         meetingService.update(currentMeeting);
 
